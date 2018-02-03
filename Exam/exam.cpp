@@ -45,13 +45,16 @@ bool Room::Add_booking(std::pair<std::string, Date_t> &&record)
 	return false;
 }
 
-bool Room::cancel_booking(Date_t &date)
+bool Room::check_delete_booking(Date_t &date, std::string action)
 {
 	for (size_t i = 0; i < _booking.size(); ++i)
 	{
 		if (date == _booking[i].second)
 		{
-			_delete_booking(i);
+			if (action == "delete")
+			{
+				_delete_booking(i);
+			}
 			return true;
 		}
 	}
@@ -84,7 +87,7 @@ bool Room::state(time_t date)
 
 void Room::print_record(std::string access)
 {
-	std::cout <<"===============================================================\n"<<
+	std::cout <<"=============================================================\n"<<
 		"Room number " << _number << "\n\t\tCapacity: " << _capacity << "\tCost per night: " << _cost_per_night << "$\n\n";
 	if (access == "admin")
 	{
@@ -100,7 +103,7 @@ void Room::print_record(std::string access)
 			}
 		}
 	}
-	std::cout << "\n===============================================================";
+	std::cout << "\n=============================================================";
 }
 
 size_t Room::clean_past() // return kol-va udalennyh zapisej
@@ -111,7 +114,7 @@ size_t Room::clean_past() // return kol-va udalennyh zapisej
 	{
 		if (_booking[i].second < date)
 		{
-			if (this->cancel_booking(_booking[i].second))
+			if (this->check_delete_booking(_booking[i].second))
 			{
 				count++;
 				--i;
@@ -139,47 +142,3 @@ void Room::_delete_booking(size_t index)
 	}
 	_booking.pop_back();
 }
-
-/*
-Room Room::Read_from_file(std::string &const file_name)
-{
-	std::ifstream fin(file_name);
-	
-	if (fin.is_open())
-	{
-		while (!fin.eof())
-		{
-			std::string s;///
-		}
-	}
-	else
-	{
-		//fail
-	}
-	return *this;
-}
-
-bool Room::Write_to_file(std::string &const file_name) 
-{
-	std::ofstream fout(file_name);
-	if (!fout.is_open())
-	{
-		std::cout << "Can't open file " << file_name << std::endl;
-		return false;
-	}
-	else
-	{
-		for (auto record : rooms)
-		{
-			fout << record. << " " << record.second << std::endl;
-			Sleep(3000);
-		}
-		fout.close();
-		return true;
-	}
-	
-
-
-}
-*/
-

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Date.h"
-
 #include <chrono>
 #include <string>
 #include <iostream>
 #include <ctime>
 #include <utility>
 #include <vector>
+#include "Date.h"
+
 
 class Room
 {
@@ -26,7 +26,7 @@ public:
 	void Set_cost(double cost);
 	
 	bool Add_booking(std::pair<std::string, Date_t> &&record);
-	bool cancel_booking(Date_t &date);
+	bool check_delete_booking(Date_t &date, std::string action = "delete");
 	bool check_date_for_booking(Date_t &date);
 	bool state(time_t date = time(NULL));
 

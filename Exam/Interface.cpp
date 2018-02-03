@@ -130,7 +130,6 @@ bool read_from_f_room(std::vector<Room>& rooms, std::string &const file_name)
 	double cost = 0;
 	size_t number = 0;
 	std::string fio = "\0";
-	//std::string fio = "\0";
 	size_t book_amount = 0;
 	time_t check_in = 0;
 	time_t check_out = 0;
@@ -372,12 +371,12 @@ void I_Admin::Menu()
 		}
 		case 9:
 		{
-			this->_Update_to_log_pass();
+			this->_Update_to_DB_user();
 			break;
 		}
 		case 10:
 		{
-			this->_Update_from_log_pass();
+			this->_Update_from_DB_user();
 			break;
 		}
 		case 11:
@@ -404,10 +403,10 @@ void I_Admin::_Show_rooms()
 	else
 	{
 		system("CLS");
-		for (size_t i = 0; i < _rooms->size(); ++i)//get()->
+		for (size_t i = 0; i < _rooms->size(); ++i)
 		{
 			std::cout << "\n";
-			_rooms->operator[](i).print_record("admin"); //.get()->operator[](i)
+			_rooms->operator[](i).print_record("admin");
 		}
 		std::string answer = "\0";
 		std::cout << "\n\nDo you want to clean old bookings? (y/n) ";
@@ -415,9 +414,9 @@ void I_Admin::_Show_rooms()
 		if (answer == "y")
 		{
 			size_t deleted_records = 0;
-			for (size_t i = 0; i < _rooms->size(); ++i)//get()->
+			for (size_t i = 0; i < _rooms->size(); ++i)
 			{
-				deleted_records += _rooms->operator[](i).clean_past();//.get()->operator[](i)
+				deleted_records += _rooms->operator[](i).clean_past();
 			}
 			std::cout << deleted_records << " records were deleted.\n";			
 		}
@@ -435,7 +434,8 @@ bool I_Admin::_Add_room()
 	{
 		bool check_ok = 1;
 		system("CLS");
-		// number
+
+		// Input number
 		std::cout << "To cancel adding room press 0\n\nEnter new room number: ";
 		std::cin >> number;
 		getchar();
@@ -451,9 +451,9 @@ bool I_Admin::_Add_room()
 			continue;
 		}
 
-		for (size_t i = 0; i < _rooms->size(); ++i)//get()->
+		for (size_t i = 0; i < _rooms->size(); ++i)
 		{
-			if (_rooms->operator[](i).Get_number() == number)//.get()->operator[](i)
+			if (_rooms->operator[](i).Get_number() == number)
 			{
 				std::cout << "\nSuch room already exists.\n";
 				Sleep(3000);
@@ -466,7 +466,7 @@ bool I_Admin::_Add_room()
 			continue;
 		}
 
-		// capacity
+		// Input capacity
 		std::cout << "Enter new room capacity: ";
 		std::cin >> capacity;
 		getchar();
@@ -483,7 +483,7 @@ bool I_Admin::_Add_room()
 			continue;
 		}
 
-		// cost
+		// input cost
 		std::cout << "Enter new room cost per night: ";
 		std::cin >> cost;
 		getchar();
@@ -502,9 +502,9 @@ bool I_Admin::_Add_room()
 		else
 		{
 			std::string answer = "\0";
-			//create
-			_rooms->push_back(Room(capacity, cost, number));//get()->
-			sort_rooms(*_rooms);//* ssylka? sort
+			// create room
+			_rooms->push_back(Room(capacity, cost, number));
+			sort_rooms(*_rooms);
 			std::cout << "\nRoom " << number << " was added.\n\nDo you want to add more room? (y/n) "; 
 			std::cin >> answer;
 			if (answer == "y")
@@ -529,15 +529,15 @@ bool I_Admin::_Delete_room()
 		std::cin >> number;
 		getchar();
 		
-		for (size_t i = 0; i < _rooms->size(); ++i)//get()->
+		for (size_t i = 0; i < _rooms->size(); ++i)
 		{
-			if (_rooms->operator[](i).Get_number() == number)//.get()->operator[](i)
+			if (_rooms->operator[](i).Get_number() == number)
 			{
-				for (size_t j = i; j < _rooms->size()-1; ++j)//get()->
+				for (size_t j = i; j < _rooms->size()-1; ++j)
 				{
-					_rooms[j] = _rooms[j+1];// .get()->operator[](j)  .get()->operator[](j + 1)
+					_rooms[j] = _rooms[j+1];
 				}
-				_rooms->pop_back(); //get()->
+				_rooms->pop_back(); 
 				std::cout << "Room number " << number << " was successfully deleted.";
 				Sleep(3000);
 				return true;
@@ -562,11 +562,11 @@ bool I_Admin::_New_booking()
 	getchar();	
 
 	std::list<size_t> number_list;
-	for (size_t i = 0; i < _rooms->size(); ++i)//get()->
+	for (size_t i = 0; i < _rooms->size(); ++i)
 	{
-		if (_rooms->operator[](i).Get_capacity() >= capacity_need) //.get()->operator[](i)
+		if (_rooms->operator[](i).Get_capacity() >= capacity_need)
 		{
-			if (_rooms->operator[](i).check_date_for_booking(booking))//.get()->operator[](i)
+			if (_rooms->operator[](i).check_date_for_booking(booking))
 			{
 				number_list.push_back(i);
 			}
@@ -583,9 +583,9 @@ bool I_Admin::_New_booking()
 	std::cout << "All matching results: \n";
 	for (auto ind : number_list)
 	{
-		double total_cost = count_total_cost(_rooms->operator[](ind).Get_cost(), booking);//.get()->operator[](ind)
+		double total_cost = count_total_cost(_rooms->operator[](ind).Get_cost(), booking);
 		std::cout << " #index " << ind+1 << ": ";
-		_rooms->operator[](ind).print_record();//.get()->operator[](ind)
+		_rooms->operator[](ind).print_record();
 		std::cout << "\n\t\t\t\t\tTotal cost: " << total_cost << "\n\n";
 	}
 	size_t index = 0;
@@ -597,19 +597,19 @@ bool I_Admin::_New_booking()
 		return false;
 	}
 	--index;
-	if (index > _rooms->size())//get()->
+	if (index > _rooms->size())
 	{
 		std::cout << "Wrong index, enter again, please ";
 		std::cin >> index;
 		getchar();
 	}
-	if (index > _rooms->size())//get()->
+	if (index > _rooms->size())
 	{
 		std::cout << "Wrong index, try again later ";
 		Sleep(2000);
 		return false;
 	}
-	std::string user_FIO = "\0"; /// CHECK
+	std::string user_FIO = "\0";
 	std::string second_str = "\0";
 	for (;;)
 	{
@@ -633,7 +633,7 @@ bool I_Admin::_New_booking()
 		break;
 	}
 
-	if (_rooms->operator[](index).Add_booking(std::pair<std::string, Date_t>(user_FIO, booking)))//.get()->operator[](index)
+	if (_rooms->operator[](index).Add_booking(std::pair<std::string, Date_t>(user_FIO, booking)))
 	{
 		std::cout << "\nBooking was successfull.";
 		Sleep(3000);
@@ -668,7 +668,7 @@ bool I_Admin::_Edit_room()
 					std::cin >> answer;
 					switch (answer)
 					{
-					case 1:
+					case 1: // View room information
 					{
 						system("CLS");
 						_rooms->operator[](i).print_record("admin");
@@ -678,7 +678,7 @@ bool I_Admin::_Edit_room()
 						
 						break;
 					}
-					case 2:
+					case 2: // Change room capacity
 					{
 						size_t new_capacity = 0;
 						std::cout << "\nEnter new capacity: ";
@@ -701,7 +701,7 @@ bool I_Admin::_Edit_room()
 						Sleep(2000);
 						break;
 					}
-					case 3:
+					case 3: // Change cost
 					{
 						size_t new_cost = 0;
 						std::cout << "\nEnter new cost: ";
@@ -724,7 +724,7 @@ bool I_Admin::_Edit_room()
 						Sleep(2000);
 						break;
 					}
-					case 4:
+					case 4: // Cancel booking without permissions
 					{
 						if (_rooms->operator[](i).Get_book_amount() == 0)
 						{
@@ -734,7 +734,7 @@ bool I_Admin::_Edit_room()
 							break;
 						}
 						Date_t booking_del(Create_book_date());
-						if (_rooms->operator[](i).cancel_booking(booking_del))
+						if (_rooms->operator[](i).check_delete_booking(booking_del))
 						{
 							std::cout << "\nCancelling was successfull.";
 							Sleep(3000);
@@ -744,12 +744,12 @@ bool I_Admin::_Edit_room()
 						Sleep(3000);
 						break;
 					}
-					case 5:
+					case 5: // Editing exit
 					{
 						exit = false;
 						break;
 					}
-					default:
+					default: // Wrong input
 					{
 						std::cout << "\nWrong enter, try again!" << std::endl;
 						Sleep(3000);
@@ -779,6 +779,7 @@ bool I_Admin::_Change_profile_info()
 	while (true)
 	{
 		system("CLS");
+		// login input
 		std::cout << "Enter \"exit\" if you want to return to menu\n\nEnter new login (min size = 4): ";
 		std::cin >> login;
 		if (login == "exit")
@@ -812,6 +813,7 @@ bool I_Admin::_Change_profile_info()
 		{
 			continue;
 		}
+		// password input
 		std::cout << "Enter your password (min size = 8): ";
 		std::cin >> password;
 		if (password.size() < 8)
@@ -826,6 +828,7 @@ bool I_Admin::_Change_profile_info()
 			Sleep(3000);
 			continue;
 		}
+		// change login, password
 		profile->login = login;
 		profile->password = password;
 		std::cout << "Login and password was successfully changed.";
@@ -845,7 +848,7 @@ void I_Admin::_Update_to_DB_room()
 		filename = "room_db.txt";
 	}
 
-	if (write_to_f_room(*_rooms, filename))//*
+	if (write_to_f_room(*_rooms, filename))
 	{
 		std::cout << "\nUpdate file " << filename << " was successfull\n";
 		Sleep(3000);
@@ -857,7 +860,7 @@ void I_Admin::_Update_to_DB_room()
 	}
 }
 
-void I_Admin::_Update_to_log_pass()
+void I_Admin::_Update_to_DB_user()
 {
 	system("CLS");
 	std::string filename = "\0";
@@ -868,7 +871,7 @@ void I_Admin::_Update_to_log_pass()
 		filename = "profiles.txt";
 	}
 
-	if (write_to_f_user(*_users, filename))//*
+	if (write_to_f_user(*_users, filename))
 	{
 		std::cout << "\nUpdate file " << filename << " was successfull\n";
 		Sleep(3000);
@@ -891,7 +894,7 @@ void I_Admin::_Update_from_DB_room()
 		filename = "room_db.txt";
 	}
 
-	if (read_from_f_room(*_rooms, filename))//*
+	if (read_from_f_room(*_rooms, filename))
 	{
 		std::cout << "\nUpdate file " << filename << " was successfull\n";
 		Sleep(3000);
@@ -904,7 +907,7 @@ void I_Admin::_Update_from_DB_room()
 
 }
 
-void I_Admin::_Update_from_log_pass()
+void I_Admin::_Update_from_DB_user()
 {
 	system("CLS");
 	std::string filename = "\0";
@@ -915,7 +918,7 @@ void I_Admin::_Update_from_log_pass()
 		filename = "profiles.txt";
 	}
 
-	if (read_from_f_user(*_users, filename))//*
+	if (read_from_f_user(*_users, filename))
 	{
 		std::cout << "\nUpdate file " << filename << " was successfull\n";
 		Sleep(3000);
@@ -986,11 +989,11 @@ bool I_User::_New_booking()
 	getchar();
 
 	std::list<size_t> number_list;
-	for (size_t i = 0; i < _rooms->size(); ++i)//get()->
+	for (size_t i = 0; i < _rooms->size(); ++i)
 	{
-		if (_rooms->operator[](i).Get_capacity() >= capacity_need) //.get()->operator[](i)
+		if (_rooms->operator[](i).Get_capacity() >= capacity_need) 
 		{
-			if (_rooms->operator[](i).check_date_for_booking(booking))//.get()->operator[](i)
+			if (_rooms->operator[](i).check_date_for_booking(booking))
 			{
 				number_list.push_back(i);
 			}
@@ -1007,10 +1010,10 @@ bool I_User::_New_booking()
 	std::cout << "All matching results: \n";
 	for (auto ind : number_list)
 	{
-		double total_cost = count_total_cost(_rooms->operator[](ind).Get_cost(), booking);//.get()->operator[](ind)
+		double total_cost = count_total_cost(_rooms->operator[](ind).Get_cost(), booking);
 		std::cout << " #index " << ind + 1 << ": ";
-		_rooms->operator[](ind).print_record();//.get()->operator[](ind)
-		std::cout << "\n\t\t\t\t\tTotal cost: " << total_cost << "\n\n";
+		_rooms->operator[](ind).print_record();
+		std::cout << " Total cost: " << total_cost << "$\n\n";
 	}
 	size_t index = 0;
 	std::cout << "\nTo cancel booking press 0.\n\nChoose room #index  ";
@@ -1021,13 +1024,13 @@ bool I_User::_New_booking()
 		return false;
 	}
 	--index;
-	if (index > _rooms->size())//get()->
+	if (index > _rooms->size())
 	{
 		std::cout << "Wrong index, enter again, please ";
 		std::cin >> index;
 		getchar();
 	}
-	if (index > _rooms->size())//get()->
+	if (index > _rooms->size())
 	{
 		std::cout << "Wrong index, try again later ";
 		Sleep(2000);
@@ -1074,44 +1077,76 @@ bool I_User::_Cancel_booking()
 			Sleep(3000);
 			return false;
 		}
+		std::string answer = "\0";
 		size_t number = profile->bookings[index].first;
 		for (size_t i = 0; i < _rooms->size(); ++i)
 		{
 			if (_rooms->operator[](i).Get_number() == number)
 			{
-				if (_rooms->operator[](i).Get_book_amount() == 0)
+				if (_rooms->operator[](i).Get_book_amount() == 0) // No booking in room case
 				{
-					std::string answer = "\0";
-					std::cout << "\nThere is no reservations for this room.\n\nMost likely your booking was alredy cancelled by administration.\nStill you can contact administration or reception to get more info";
-					for (size_t i = index; i < profile->bookings.size() - 1; ++i)
+					std::cout << "\nThere is no reservations for this room.\n\nMost likely your booking was alredy cancelled by administration." <<
+						"\nStill you can contact administration or reception to get more info\n\nDo you still want to delete record from your profile? (y/n) ";
+					std::cin >> answer;
+					if (answer == "y")
 					{
-						profile->bookings[i] = profile->bookings[i + 1];
+						for (size_t j = index; j < profile->bookings.size() - 1; ++j)
+						{
+							profile->bookings[j] = profile->bookings[j + 1];
+						}
+						profile->bookings.pop_back();
+						std::cout << "\nRecord deleted.";
+						Sleep(3000);
+						return true;
+					}
+					return false;
+				}
+				else if (_rooms->operator[](i).check_delete_booking(profile->bookings[index].second)) // can or can not find and cancel reservation
+				{
+					std::cout << "\nCancelling was successfull.";
+					for (size_t j = index; j < profile->bookings.size() - 1; ++j)
+					{
+						profile->bookings[j] = profile->bookings[j + 1];
 					}
 					profile->bookings.pop_back();
 					Sleep(6000);
-					break;
+					return true;
 				}
-				if (_rooms->operator[](i).cancel_booking(profile->bookings[index].second))
+				else
 				{
-					std::cout << "\nCancelling was successfull.";
-					for (size_t i = index; i < profile->bookings.size() - 1; ++i)
+					std::cout << "\nCancelling was unsuccessfull. There is no matching reservations for this room.\n\n" <<
+						"Most likely your booking was alredy cancelled by administration.\nYou can contact administration or reception to get more info" <<
+						"Do you still want to delete record from your profile? (y/n) ";
+					std::cin >> answer;
+					if (answer == "y")
 					{
-						profile->bookings[i] = profile->bookings[i + 1];
+						for (size_t j = index; j < profile->bookings.size() - 1; ++j)
+						{
+							profile->bookings[j] = profile->bookings[j + 1];
+						}
+						profile->bookings.pop_back();
+						std::cout << "\nRecord deleted.";
+						Sleep(3000);
+						return true;
 					}
-					profile->bookings.pop_back();
-					Sleep(3000);
-					break;
 				}
-				std::cout << "\nCancelling was unsuccessfull. There is no matching reservations for this room.\n\nMost likely your booking was alredy cancelled by administration.\nYou can contact administration or reception to get more info";
-				for (size_t i = index; i < profile->bookings.size() - 1; ++i)
-				{
-					profile->bookings[i] = profile->bookings[i + 1];
-				}
-				profile->bookings.pop_back();
-				Sleep(6000);
-				break;
 			}
 		}
+		std::cout << "\nCancelling was unsuccessfull. There is no matching room number.\n\nContact administration or reception to get more info" <<
+			"Do you still want to delete record from your profile? (y/n) ";
+		std::cin >> answer;
+		if (answer == "y")
+		{
+			for (size_t j = index; j < profile->bookings.size() - 1; ++j)
+			{
+				profile->bookings[j] = profile->bookings[j + 1];
+			}
+			profile->bookings.pop_back();
+			std::cout << "\nRecord deleted.";
+			Sleep(3000);
+			return true;
+		}
+		return false;
 	}
 }
 
@@ -1135,7 +1170,7 @@ bool I_User::_Change_profile_info()
 
 		switch (answer)
 		{
-		case 1:
+		case 1: // Change name
 		{
 			system("CLS");
 
@@ -1146,7 +1181,7 @@ bool I_User::_Change_profile_info()
 			Sleep(3000);
 			break;
 		}
-		case 2:
+		case 2: // Change surname
 		{
 			system("CLS");
 			std::cout << "Enter new surname ";
@@ -1156,7 +1191,7 @@ bool I_User::_Change_profile_info()
 			Sleep(3000);
 			break;
 		}
-		case 3:
+		case 3: // Change login
 		{
 			while (true)
 			{
@@ -1201,7 +1236,7 @@ bool I_User::_Change_profile_info()
 			Sleep(3000);
 			break;
 		}
-		case 4:
+		case 4: // Change password
 		{
 			while (true)
 			{
@@ -1231,12 +1266,12 @@ bool I_User::_Change_profile_info()
 			Sleep(3000);
 			break;
 		}
-		case 5:
+		case 5: // Exit editing
 		{
 			exit = false;
 			break;
 		}
-		default:
+		default: // Wrong input
 		{
 			std::cout << "\nWrong enter, try again!" << std::endl;
 			Sleep(3000);
@@ -1255,18 +1290,72 @@ void I_User::_Show_me()
 	std::cout << "\nName " << name << "\n\nSurname " << surname << std::endl;
 	if (profile->bookings.empty())
 	{
-		std::cout << "\nNo booking yet.";
+		std::cout << "\n\nNo booking yet.\n\n\nPress to continue ";
+		getchar();
+		getchar();
 	}
 	else
 	{
+		std::string answer = "\0";
+		bool check_ok = 0;
+		std::vector<size_t> record_indexes;
 		for (size_t i = 0; i < profile->bookings.size(); ++i)
 		{
-			std::cout << "\n#" << i + 1 << "\tRoom number " << profile->bookings[i].first << "\n" << profile->bookings[i].second.Get_string() << std::endl;			
+			size_t number = profile->bookings[i].first;
+			std::cout << "\n#" << i + 1 << "\tRoom number " << number << "\n" << profile->bookings[i].second.Get_string() << std::endl;
+			for (size_t j = 0; j < _rooms->size(); ++j)
+			{
+				if (_rooms->operator[](j).Get_number() == number)
+				{
+					if (_rooms->operator[](j).Get_book_amount() == 0) // No booking in room case
+					{
+						break;
+					}
+					else if (_rooms->operator[](j).check_delete_booking(profile->bookings[i].second, "check")) // can or can not find reservation
+					{
+						check_ok = 1;
+						break;
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+
+			if (!check_ok)
+			{
+				record_indexes.push_back(i);
+				std::cout << "\nStatus: annuled" << std::endl;
+			}
+			else
+			{
+				std::cout << "\nStatus: confirmed\n" << std::endl;
+			}			
+		}
+		if (!check_ok)
+		{
+			std::cout << "Do you want to delete all cancelled records? (y/n) ";
+			std::cin >> answer;
+			if (answer == "y")
+			{
+				for (size_t i = record_indexes.size() - 1; i >= 0; --i)
+				{
+					for (size_t j = record_indexes[i]; j < profile->bookings.size() - 1; ++j)
+					{
+						profile->bookings[j] = profile->bookings[j + 1];
+					}
+					profile->bookings.pop_back();
+					std::cout << "\nRecord deleted.";
+					Sleep(3000);
+					if (i == 0)
+					{
+						break;
+					}
+				}
+			}
 		}
 	}
-	std::cout << "\n\nPress to continue ";
-	getchar();
-	getchar();
 }
 
 
@@ -1315,11 +1404,11 @@ bool I_Guest::_New_booking()
 	getchar();
 
 	std::list<size_t> number_list;
-	for (size_t i = 0; i < _rooms->size(); ++i)//get()->
+	for (size_t i = 0; i < _rooms->size(); ++i)
 	{
-		if (_rooms->operator[](i).Get_capacity() >= capacity_need) //.get()->operator[](i)
+		if (_rooms->operator[](i).Get_capacity() >= capacity_need)
 		{
-			if (_rooms->operator[](i).check_date_for_booking(booking))//.get()->operator[](i)
+			if (_rooms->operator[](i).check_date_for_booking(booking))
 			{
 				number_list.push_back(i);
 			}
@@ -1335,9 +1424,9 @@ bool I_Guest::_New_booking()
 	std::cout << "All matching results: \n\n";
 	for (auto ind : number_list)
 	{
-		double total_cost = count_total_cost(_rooms->operator[](ind).Get_cost(), booking);//.get()->operator[](ind)
+		double total_cost = count_total_cost(_rooms->operator[](ind).Get_cost(), booking);
 		std::cout << " #index " << ind + 1 << ":      ";
-		_rooms->operator[](ind).print_record();//.get()->operator[](ind)
+		_rooms->operator[](ind).print_record();
 		std::cout << " Total cost: " << total_cost << "$\n\n";
 	}
 	size_t index = 0;
@@ -1349,13 +1438,13 @@ bool I_Guest::_New_booking()
 		return false;
 	}
 	--index;
-	if (index > _rooms->size())//get()->
+	if (index > _rooms->size())
 	{
 		std::cout << "Wrong index, enter again, please ";
 		std::cin >> index;
 		getchar();
 	}
-	if (index > _rooms->size())//get()->
+	if (index > _rooms->size())
 	{
 		std::cout << "Wrong index, try again later ";
 		Sleep(2000);
@@ -1385,7 +1474,7 @@ bool I_Guest::_New_booking()
 		break;
 	}
 	
-	if (_rooms->operator[](index).Add_booking(std::pair<std::string, Date_t>(user_FIO, booking)))//.get()->operator[](index)
+	if (_rooms->operator[](index).Add_booking(std::pair<std::string, Date_t>(user_FIO, booking)))
 	{
 		std::cout << "\nBooking was successfull.";
 		Sleep(3000);
@@ -1395,428 +1484,3 @@ bool I_Guest::_New_booking()
 	Sleep(3000);
 	return true;
 }
-
-
-
-
-/*
-
-void I_Admin::Menu()
-{
-bool exit = true;
-int answer = 0;
-while (exit)
-{
-system("CLS");
-std::cout << "\n-> To show all rooms \t press 1\n\n-> To add new room \t press 2\n\n" <<
-"-> To edit room \t press 3\n\n-> To delete room \t press 4\n\n-> To make new booking \t press 5\n\n" <<
-"-> To change admin login and password \t press 6\n\n-> To update database with rooms \t press 7\n\n" <<
-"-> To update from database with rooms \t press 8\n\n-> To update file with login-password \t press 9\n\n" <<
-"-> To update from file login-password \t press 10\n\n-> To log out \t press 11\n\n>>> ";
-std::cin >> answer;
-switch (answer)
-{
-case 1:
-{
-this->_Show_rooms();
-break;
-}
-case 2:
-{
-this->_Add_room();
-break;
-}
-case 3:
-{
-this->_Edit_room();
-break;
-}
-case 4:
-{
-this->_Delete_room();
-break;
-}
-case 5:
-{
-this->_New_booking();
-break;
-}
-case 6:
-{
-this->_Change_log_info();
-break;
-}
-case 7:
-{
-this->_Update_to_DB_room();
-break;
-}
-case 8:
-{
-this->_Update_from_DB_room();
-break;
-}
-case 9:
-{
-this->_Update_to_log_pass();
-break;
-}
-case 10:
-{
-this->_Update_from_log_pass();
-break;
-}
-case 11:
-{
-exit = false;
-break;
-}
-default:
-{
-std::cout << "\nWrong enter, try again!" << std::endl;
-Sleep(3000);
-break;
-}
-}
-}
-
-}
-
-void I_Admin::_Show_rooms()
-{
-if (_rooms->empty())//.get()->
-{
-std::cout << "\nThere are no  registered rooms in hotel.\n\n";
-}
-else
-{
-system("CLS");
-for (size_t i = 0; i < _rooms->size(); ++i)//get()->
-{
-std::cout << "\n";
-_rooms->operator[](i).print_record(access); //.get()->operator[](i)
-}
-std::string answer = "\0";
-std::cout << "\n\nDo you want to clean old bookings? (y/n) ";
-std::cin >> answer;
-if (answer == "y")
-{
-size_t deleted_records = 0;
-for (size_t i = 0; i < _rooms->size(); ++i)//get()->
-{
-deleted_records += _rooms->operator[](i).clean_past();//.get()->operator[](i)
-}
-std::cout << deleted_records << " records were deleted.\n";
-}
-}
-Sleep(3000);
-}
-
-bool I_Admin::_Add_room()
-{
-size_t capacity = 0;
-size_t number = 0;
-double cost = 0;
-
-while (true)
-{
-bool check_ok = 1;
-system("CLS");
-// number
-std::cout << "To cancel adding room press 0\n\nEnter new room number: ";
-std::cin >> number;
-getchar();
-
-if (number == 0)
-{
-return false;
-}
-else if (number < 0)
-{
-std::cout << "\nRoom number can't be less than 1.\n";
-Sleep(3000);
-continue;
-}
-
-for (size_t i = 0; i < _rooms->size(); ++i)//get()->
-{
-if (_rooms->operator[](i).Get_number() == number)//.get()->operator[](i)
-{
-std::cout << "\nSuch room already exists.\n";
-Sleep(3000);
-check_ok = false;
-break;
-}
-}
-if (!check_ok)
-{
-continue;
-}
-
-// capacity
-std::cout << "Enter new room capacity: ";
-std::cin >> capacity;
-getchar();
-
-if (capacity < 1 || capacity > 10)
-{
-std::cout << "\nWrong capacity value.\n";
-Sleep(3000);
-check_ok = false;
-break;
-}
-if (!check_ok)
-{
-continue;
-}
-
-// cost
-std::cout << "Enter new room cost per night: ";
-std::cin >> cost;
-getchar();
-
-if (cost < 1.0)
-{
-std::cout << "\nWrong cost value.\n";
-Sleep(3000);
-check_ok = false;
-break;
-}
-if (!check_ok)
-{
-continue;
-}
-else
-{
-std::string answer = "\0";
-//create
-_rooms->push_back(Room(capacity, cost, number));//get()->
-sort_rooms(*_rooms);//* ssylka? sort
-std::cout << "\nRoom " << number << " was added.\n\nDo you want to add more room? (y/n) ";
-std::cin >> answer;
-if (answer == "y")
-{
-continue;
-}
-else
-{
-return true;
-}
-}
-}
-}
-
-bool I_Admin::_Delete_room()
-{
-size_t number = 0;
-while (true)
-{
-system("CLS");
-std::cout << "To delete room enter room number: ";
-std::cin >> number;
-getchar();
-
-for (size_t i = 0; i < _rooms->size(); ++i)//get()->
-{
-if (_rooms->operator[](i).Get_number() == number)//.get()->operator[](i)
-{
-for (size_t j = i; j < _rooms->size()-1; ++j)//get()->
-{
-_rooms[j] = _rooms[j+1];// .get()->operator[](j)  .get()->operator[](j + 1)
-}
-_rooms->pop_back(); //get()->
-std::cout << "Room number " << number << " was successfully deleted.";
-Sleep(3000);
-return true;
-}
-}
-std::string answer = "\0";
-std::cout << "\nRoom not found\nWould you try again? (y/n) ";
-std::getline(std::cin, answer);
-if (answer == "n")
-{
-return false;
-}
-}
-}
-
-bool I_Admin::_New_booking()
-{
-Date_t booking(Create_book_date());
-system("CLS");
-size_t capacity_need = 0;
-std::cout << "\nEnter needed capacity ";
-std::cin >> capacity_need;
-getchar();
-
-std::list<size_t> number_list;
-for (size_t i = 0; i < _rooms->size(); ++i)//get()->
-{
-if (_rooms->operator[](i).Get_capacity() >= capacity_need) //.get()->operator[](i)
-{
-if (_rooms->operator[](i).check_date_for_booking(booking))//.get()->operator[](i)
-{
-number_list.push_back(i);
-}
-}
-}
-
-if (number_list.size() == 0)
-{
-std::cout << "\nNo room matching your request, please try again.\n";
-Sleep(3000);
-return false;
-}
-system("CLS");
-std::cout << "All matching results: \n";
-for (auto ind : number_list)
-{
-double total_cost = count_total_cost(_rooms->operator[](ind).Get_cost(), booking);//.get()->operator[](ind)
-std::cout << " #index " << ind+1 << ": ";
-_rooms->operator[](ind).print_record();//.get()->operator[](ind)
-std::cout << "\n\t\t\t\t\tTotal cost: " << total_cost << "\n\n";
-}
-size_t index = 0;
-std::cout << "\nTo cancel booking press 0.\n\nChoose room #index  ";
-std::cin >> index;
-getchar();
-if (index == 0)
-{
-return false;
-}
---index;
-if (index > _rooms->size())//get()->
-{
-std::cout << "Wrong index, enter again, please ";
-std::cin >> index;
-getchar();
-}
-if (index > _rooms->size())//get()->
-{
-std::cout << "Wrong index, try again later ";
-Sleep(2000);
-return false;
-}
-std::string user_FIO = "\0"; /// CHECK
-std::string second_str = "\0";
-std::cout << "\nEnter customer initials, please (Surname Name): ";
-std::cin >> user_FIO >> second_str;
-user_FIO += " " + second_str;
-if (_rooms->operator[](index).Add_booking(std::pair<std::string, Date_t>(user_FIO, booking)))//.get()->operator[](index)
-{
-std::cout << "\nBooking was successfull.";
-Sleep(3000);
-return true;
-}
-std::cout << "\nSomething went wrong. Try again later.";
-Sleep(3000);
-return true;
-}
-
-bool I_Admin::_Edit_room()
-{
-//menu
-return 0;
-}
-
-bool I_Admin::_Change_log_info()
-{
-//password and login;
-return 0;
-}
-
-void I_Admin::_Update_to_DB_room()
-{
-system("CLS");
-std::string filename = "\0";
-std::cout << "Enter file name (or default) ";
-std::cin >> filename;
-if (filename == "default")
-{
-filename = "room_db.txt";
-}
-
-if (write_to_f_room(*_rooms, filename))//*
-{
-std::cout << "\nUpdate file " << filename << " was successfull\n";
-Sleep(3000);
-}
-else
-{
-std::cout << "\nUpdate file " << filename << " was unsuccessfull\n";
-Sleep(3000);
-}
-}
-
-void I_Admin::_Update_to_log_pass()
-{
-system("CLS");
-std::string filename = "\0";
-std::cout << "Enter file name (or default) ";
-std::cin >> filename;
-if (filename == "default")
-{
-filename = "log_pass.txt";
-}
-
-if (write_to_f_log(*_logs, filename))//*
-{
-std::cout << "\nUpdate file " << filename << " was successfull\n";
-Sleep(3000);
-}
-else
-{
-std::cout << "\nUpdate file " << filename << " was unsuccessfull\n";
-Sleep(3000);
-}
-}
-
-void I_Admin::_Update_from_DB_room()
-{
-system("CLS");
-std::string filename = "\0";
-std::cout << "Enter file name (or default) ";
-std::cin >> filename;
-if (filename == "default")
-{
-filename = "room_db.txt";
-}
-
-if (read_from_f_room(*_rooms, filename))//*
-{
-std::cout << "\nUpdate file " << filename << " was successfull\n";
-Sleep(3000);
-}
-else
-{
-std::cout << "\nUpdate file " << filename << " was unsuccessfull\n";
-Sleep(3000);
-}
-
-}
-
-void I_Admin::_Update_from_log_pass()
-{
-system("CLS");
-std::string filename = "\0";
-std::cout << "Enter file name (or default) ";
-std::cin >> filename;
-if (filename == "default")
-{
-filename = "log_pass.txt";
-}
-
-if (read_from_f_log(*_logs, filename))//*
-{
-std::cout << "\nUpdate file " << filename << " was successfull\n";
-Sleep(3000);
-}
-else
-{
-std::cout << "\nUpdate file " << filename << " was unsuccessfull\n";
-Sleep(3000);
-}
-}
-
-//Sleep(3000);
-*/
